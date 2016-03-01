@@ -1,0 +1,176 @@
+DECLARE 
+	A NUMBER :=1;
+	B NUMBER :=4;
+	C NUMBER :=9;
+	D NUMBER;
+	R1 NUMBER;
+	R2 NUMBER;
+	Di NUMBER;
+	A1  NUMBER;
+	A2 NUMBER;
+	BEGIN
+		D:=B*B-4*A*C;
+		IF (D<0) THEN
+			DBMS_OUTPUT.PUT_LINE('IMAGINARY ROOTS');
+			DI := SQRT(ABS(D));
+			A1 := -B/(2*A);
+			A2 := DI/(2*A);
+			DBMS_OUTPUT.PUT_LINE('ROOTS ARE '||A1||' +'||A2||'i'||' AND '||A1||' -'||A2||'i');
+		
+		ELSE
+			R1:=(-B+SQRT(D))/2/A;
+			R2:=(-B-SQRT(D))/2/A;
+			DBMS_OUTPUT.PUT_LINE('ROOTS ARE '||R1||' '||R2);
+		END IF;
+	END;
+/
+
+DECLARE 
+	D1 DATE;
+	D2 DATE;
+	DAYS NUMBER;
+	FINE NUMBER;
+	BEGIN
+		D1:=TO_DATE('12-09-15','DD-MM-YY');
+		D2:=TO_DATE('23-09-15','DD-MM-YY');
+		DAYS := D2-D1;
+		IF DAYS = 5 THEN
+			FINE:= 0.5;
+		ELSIF DAYS>5 AND DAYS<=10 THEN
+			FINE:= 1;
+		ELSIF DAYS>10 AND DAYS<=30 THEN
+			FINE:= 5;
+		ELSE
+			FINE := 10;
+		END IF;
+		DBMS_OUTPUT.PUT_LINE('Fine is Rs.'||FINE);
+	END;
+/
+
+
+declare
+	first number := 0;
+	second number := 1;
+	last number := 15;
+	done boolean := true;
+	temp number;
+	begin
+		DBMS_OUTPUT.PUT_LINE(first||' '||second||' ');
+		while done
+			loop
+			temp := first + second;
+			first := second;
+			second := temp;
+			DBMS_OUTPUT.PUT_LINE(first||' '||second||' ');
+			if second >= last then
+				EXIT;
+			end if;
+			end loop;
+	end;
+/
+			 
+declare 
+	str varchar(20);
+	rev varchar(20);
+	i number;
+	begin
+		str := '&str';
+		for i in reverse 1.. length(str) loop
+			rev := rev || substr(str, i, 1);
+		end loop;
+	if str = rev then
+		dbms_output.put_line('String is Palindrome');
+	else
+		dbms_output.put_line('String is not Palindrome');
+	end if; 
+	end;
+/
+
+create table tbl_next_date(
+	given_date date,
+	next_date date 
+);
+
+set serveroutput on;
+declare
+	d1 date;
+	d2 date;
+	str varchar(10);
+	done boolean := true;
+	begin
+		
+		str := '&str';
+		d1 := to_date(str, 'DD-MM-YYYY');
+		d2 := d1 + 1;
+		insert into tbl_next_date values(d1, d2);
+		
+	end;
+/
+
+select * from tbl_next_date;
+drop table tbl_next_date;
+		
+create table sphere(
+	radius int primary key,
+	volume number,
+	surface_area number
+);
+
+set serveroutput on;
+declare
+	r number;
+	volume number;
+	sa number;
+	pi number := 3.14;
+	begin
+		r := '&r';
+		if(r > 7 and r < 3) then
+			dbms_output.put_line('Radius should be between 3 and 7!');
+		else
+			volume := (4/3) * pi * r * r * r;
+			sa := 4 * pi * r * r;
+			insert into sphere values(r, volume, sa);
+			dbms_output.put_line('Table entry successfully created');
+		end if;
+	end;
+/
+		
+
+
+set serveroutput on;
+DECLARE 
+NUM NUMBER;
+FACT NUMBER := 1;
+DONE BOOLEAN:=TRUE;
+	BEGIN
+		NUM := '&NUM';
+		FOR I IN 1..NUM
+		LOOP
+		FACT := FACT*I;
+		END LOOP;
+	DBMS_OUTPUT.PUT_LINE('FACTORIAL = '||FACT);
+END;
+
+set serveroutput on;
+
+declare
+	temp number;
+	countt number := 0;
+	sumt number := 0;
+	aver number;
+	h number;
+	begin
+		temp := '&temp';
+		h :=  0 + temp;
+		while h <> -1 
+		loop
+		sumt := sumt + temp;
+		countt := countt + 1;
+		temp := '&temp';
+		h := 0 + temp;
+		end loop;
+		aver := sumt/countt;
+		DBMS_OUTPUT.PUT_LINE('Average = '||aver);
+	end;
+/
+

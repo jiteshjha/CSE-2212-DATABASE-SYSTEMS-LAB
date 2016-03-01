@@ -1,0 +1,263 @@
+CREATE TABLE EMPLOYEE1 (
+	FNAME VARCHAR(15) NOT NULL,
+	MINIT CHAR,
+	LNAME VARCHAR(15) NOT NULL,
+	SSN VARCHAR(9) NOT NULL,
+	BDATE DATE,
+	ADDRESS VARCHAR(30),
+	SEX CHAR,
+	SALARY DECIMAL(10,2),
+	PRIMARY KEY (SSN));
+
+CREATE TABLE SUPERVISOR (
+	ESSN VARCHAR(9) NOT NULL,
+	SSSN VARCHAR(9) NOT NULL,
+	FOREIGN KEY (SSSN) REFERENCES EMPLOYEE1(SSN),
+	FOREIGN KEY (ESSN) REFERENCES EMPLOYEE1(SSN)
+	);
+
+
+CREATE TABLE DEPARTMENT1 (
+	DNAME VARCHAR(15) NOT NULL,
+	DNUMBER INT NOT NULL,
+	PRIMARY KEY (DNUMBER),
+	UNIQUE (DNAME));
+
+
+create table manages1 (
+	SSN VARCHAR(9) NOT NULL,
+	MGRSTARTDATE DATE NOT NULL,
+	Dno INT NOT NULL,
+	Foreign key (SSN) references Employee1(SSN) ON DELETE CASCADE,
+	Foreign key(Dno) references Department1(DNUMBER) ON DELETE CASCADE
+);
+
+CREATE TABLE DEPT_LOCATIONS (
+	DNUMBER INT NOT NULL,
+	DLOCATION VARCHAR(15) NO T NULL,
+	PRIMARY KEY (DNUMBER, DLOCATION),
+	FOREIGN KEY (DNUMBER)
+	REFERENCES DEPARTMENT1(DNUMBER)
+	ON DELETE CASCADE);
+
+CREATE TABLE WORKS_ON1 (
+	ESSN varCHAR(9) NOT NULL,
+	PNO INT NOT NULL,
+	HOURS DECIMAL(3,1) NOT NULL,
+	PRIMARY KEY (ESSN, PNO),
+	FOREIGN KEY (ESSN)
+	REFERENCES EMPLOYEE1(SSN),
+	FOREIGN KEY (PNO)
+	REFERENCES PROJECT1(PNUMBER) );
+
+CREATE TABLE PROJECT1 (
+	PNAME VARCHAR(15) NOT NULL,
+	PNUMBER INT NOT NULL,
+	PLOCATION VARCHAR(15),
+	DNUM INT NOT NULL,
+	PRIMARY KEY (PNUMBER),
+	UNIQUE (PNAME),
+	FOREIGN KEY (DNUM)
+	REFERENCES DEPARTMENT1(DNUMBER) );
+
+
+CREATE TABLE WORKS_FOR1 (
+	ESSN varCHAR(9) NOT NULL,
+	Dno INT NOT NULL,
+	FOREIGN KEY (ESSN)
+	REFERENCES EMPLOYEE1(SSN),
+	Foreign key(Dno) references Department1(DNUMBER) );
+
+CREATE TABLE CONTROL1 (
+	PNAME VARCHAR(15) NOT NULL,
+	FOREIGN KEY (PNAME)
+	REFERENCES PROJECT1(PNAME),
+	DNUM INT NOT NULL,
+	FOREIGN KEY (DNUM)
+	REFERENCES DEPARTMENT1(DNUMBER) );
+
+CREATE TABLE DEPENDENT (
+ESSN VARCHAR(9) NOT NULL,
+DEPENDENT_NAME VARCHAR(15) NOT NULL,
+SEX CHAR,
+BDATE DATE,
+RELATIONSHIP VARCHAR(8),
+PRIMARY KEY (ESSN, DEPENDENT_NAME),
+FOREIGN KEY (ESSN)
+REFERENCES EMPLOYEE1(SSN) );
+
+insert into employee1 values('Jha', 'A', 'Jitesh', '1234', sysdate, 'Pakistan', 'M', 12000);
+
+insert into employee1 values('dfgdf', 'h', 'tesh', '14', sysdate, 'Pakistan', 'M', 12000);
+
+insert into employee1 values('Jgyjha', 'A', 'Jgjhesh', '124', sysdate, 'Pakistan', 'M', 12000);
+
+insert into employee1 values('Jhja', 'A', 'Jiopesh', '11', sysdate, 'Pakistan', 'M', 12000);
+
+insert into employee1 values('iioo', 'A', 'Jiihesh', '21', sysdate, 'Pakistan', 'M', 92000);
+
+insert into supervisor values('1234', '14');
+
+insert into supervisor values('14', '124');
+
+insert into department1 values('CSE', 1);
+
+insert into department1 values('ECE', 2);
+
+insert into department1 values('CHEM', 3);
+
+insert into depT_LOCATIONS values(1, 'Pakistan');
+
+insert into depT_LOCATIONS values(2, 'Europe');
+
+insert into depT_LOCATIONS values(3, 'Nepal');
+
+insert into project1 values('sds', '01', 'Pakistan', 1);
+
+insert into project1 values('sfggfs', '02', 'Nepal', 2);
+
+insert into dependent values('1234', 'dsd', 'M', sysdate, 'Wife');
+
+
+insert into dependent values('14', 'dfgdf', 'M', sysdate, 'Wife');
+
+insert into dependent values('14', 'dskcd', 'M', sysdate, 'Wife');
+
+insert into control1 values('sds', 01);
+
+insert into control1 values('sfggfs', 02);
+
+insert into works_for1 values ('14', 1);
+
+
+insert into works_for1 values ('1234', 1);
+
+
+insert into works_for1 values ('124', 2);
+
+
+insert into works_for1 values ('11', 3);
+
+
+insert into works_for1 values ('21', 3);
+
+insert into works_on1 values ('14', 01, 2);
+
+
+insert into works_on1 values ('14', 01, 2);
+
+insert into works_on1 values ('1234', 02, 9);
+
+insert into manages1 values ('14', sysdate, 1);
+
+
+insert into manages1 values ('1234', sysdate,  1);
+
+
+insert into  manages1 values ('124', sysdate,2);
+
+
+insert into  manages1 values ('11', sysdate,3);
+
+
+insert into  manages1 values ('21', sysdate,3);
+
+
+---------------------------------
+
+
+1) SELECT BDATE, ADDRESS
+FROM EMPLOYEE1
+WHERE FNAME=’Jha’ AND MINIT=’A’ AND LNAME=’Jitesh’;
+
+2) SELECT FNAME, LNAME, ADDRESS
+FROM EMPLOYEE1, DEPARTMENT1, WORKS_FOR1
+WHERE DNAME=’CSE’ AND Employee1.SSN = WORKS_FOR1.ESSN and WORKS_FOR1.Dno = Department1.DNUMBER;
+
+3) SELECT PNUMBER, DNUM, LNAME, ADDRESS, BDATE
+FROM PROJECT1, DEPARTMENT1, EMPLOYEE1, WORKS_FOR1
+WHERE PROJECT1.DNUM= DEPARTMENT1.DNUMBER AND Employee1.SSN = WORKS_FOR1.ESSN and WORKS_FOR1.Dno = Department1.DNUMBER
+AND PLOCATION=’Pakistan’;
+
+4) select distinct salary from Employee1;
+
+5) SELECT E.FNAME, E.LNAME, S.FNAME, S.LNAME
+FROM supervisor, Employee1 E, Employee1 S
+WHERE supervisor.SSSN=S.SSN and supervisor.SSSN = E.SSN;
+
+6) ( SELECT PNO
+FROM WORKS_ON1, EMPLOYEE1
+WHERE ESSN=SSN AND LNAME=’Smith’ )
+UNION
+( SELECT PNUMBER
+FROM PROJECT1, DEPARTMENT1, EMPLOYEE1, WORKS_FOR1
+WHERE PROJECT1.DNUM= DEPARTMENT1.DNUMBER AND Employee1.SSN = WORKS_FOR1.ESSN and WORKS_FOR1.Dno = Department1.DNUMBER AND LNAME=’Smith’ )
+
+7) SELECT FNAME, LNAME
+FROM EMPLOYEE1
+WHERE ADDRESS LIKE ’%Houston, TX%’
+
+8) SELECT FNAME, LNAME, 1.1*SALARY
+FROM EMPLOYEE, WORKS_ON, PROJECT
+WHERE SSN = ESSN
+AND PNO = PNUMBER AND PNAME = ’ProductX’
+ORDER BY FNAME, LNAME
+
+9) SELECT FNAME, LNAME, ADDRESS
+FROM EMPLOYEE1, DEPARTMENT1, WORKS_FOR1
+WHERE Employee1.SSN = WORKS_FOR1.ESSN and WORKS_FOR1.Dno = Department1.DNUMBER and WORKS_FOR1.Dno = 1 
+and salary between 30000 and 40000;
+
+10) SELECT DNAME, FNAME, LNAME, PNAME
+FROM DEPARTMENT1, EMPLOYEE1, WORKS_FOR1
+WORKS_ON1, PROJECT1 
+WHERE EMPLOYEE1.SSN = WORKS_FOR1.ESSN;
+
+10) SELECT DNAME, FNAME, LNAME, PNAME
+FROM DEPARTMENT1, EMPLOYEE1, WORKS_FOR1, WORKS_ON1, PROJECT1
+WHERE EMPLOYEE1.SSN = WORKS_FOR1.ESSN AND WORKS_FOR1.DNO = DEPARTMENT1.DNUMBER AND WORKS_ON1.PNO = PROJECT1.PNUMBER AND EMPLOYEE1.SSN = WORKS_ON1.ESSN;
+
+11) SELECT FNAME, LNAME
+FROM EMPLOYEE1
+WHERE SSN NOT IN (SELECT ESSN FROM SUPERVISOR);
+
+12) SELECT * FROM EMPLOYEE1, DEPENDENT WHERE EMPLOYEE1.FNAME = DEPENDENT.DEPENDENT_NAME
+AND EMPLOYEE1.SEX = DEPENDENT.SEX;
+
+13) SELECT FNAME, LNAME
+FROM EMPLOYEE1
+WHERE SSN NOT IN (SELECT ESSN FROM SUPERVISOR);
+
+14) SELECT FNAME, LNAME
+FROM EMPLOYEE1
+WHERE SSN NOT IN (SELECT ESSN FROM DEPENDENT);
+
+15) SELECT FNAME, LNAME
+FROM EMPLOYEE1 E
+WHERE 1 <= (SELECT count(ESSN) FROM DEPENDENT WHERE E.SSN = DEPENDENT.ESSN GROUP BY ESSN);
+
+16) SELECT SUM (SALARY), MAX (SALARY),
+MIN (SALARY), AVG (SALARY)
+FROM EMPLOYEE;
+
+17) SELECT SUM (SALARY), MAX (SALARY),
+MIN (SALARY), AVG (SALARY)
+FROM EMPLOYEE1, DEPARTMENT1, WORKS_FOR1
+WHERE Employee1.SSN = WORKS_FOR1.ESSN and WORKS_FOR1.Dno = Department1.DNUMBER;
+
+18) SELECT PNUMBER, PNAME, COUNT(*)
+FROM PROJECT1, WORKS_ON1
+WHERE PNUMBER = PNO
+GROUP BY PNUMBER, PNAME
+
+19) SELECT PNUMBER, PNAME, COUNT(*)
+FROM PROJECT1, WORKS_ON1
+WHERE PNUMBER  =PNO
+GROUP BY PNUMBER, PNAME
+HAVING COUNT(*) > 2;
+
+20) SELECT DNUMBER, COUNT(*)
+FROM EMPLOYEE1, DEPARTMENT1, WORKS_FOR1
+WHERE Employee1.SSN = WORKS_FOR1.ESSN and WORKS_FOR1.Dno = Department1.DNUMBER and salary > 40000
+group by DNUMBER
+having count(*) > 5;

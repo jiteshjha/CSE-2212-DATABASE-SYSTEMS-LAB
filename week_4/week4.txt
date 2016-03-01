@@ -1,0 +1,78 @@
+1) create table Employee (
+	EmpNo numeric(8, 0) primary key,
+	EmpName varchar(10) not null,
+	Sex varchar(1) not null check (Sex in ('M', 'F')),
+	Salary numeric(10, 0) default(1000.0) not null,
+	Address varchar(30) not null,
+	Dno numeric(8, 0)
+);
+
+2) create table DepartmentNew (
+	DeptNo numeric(8, 0) primary key,
+	DeptName varchar(10) unique
+);
+
+3) ALTER TABLE Employee 
+ADD FOREIGN KEY (DNo)
+REFERENCES DepartmentNew(DeptNo);
+
+4) INSERT INTO DepartmentNew values (12345678, 'Physics');
+INSERT INTO Employee values (87654321, 'Adam', 'M', 23000, 'Manipal', 12345678);
+
+
+5) INSERT INTO Employee values (87654325, 'Steve', 'A', 99, 'Manipal', 12345678);
+INSERT INTO Employee values (87654361, 'Mark', 'I', 100, 'Manipal', 12345678);
+
+7) ALTER TABLE Employee DROP COLUMN Dno;
+
+ALTER TABLE Employee ADD Dno numeric(8, 0);
+
+ALTER TABLE Employee 
+ADD FOREIGN KEY (DNo)
+REFERENCES DepartmentNew(DeptNo) on delete cascade;
+
+10) select name, length(name) from student;
+
+11)select lower(name) ins_name from instructor;
+
+12)select substr(dept_name, 3, 3) from department;
+
+12)select upper(name) ins_name from instructor;
+
+13)select nvl(null, 1) from takes;
+
+15)select salary, round(salary/3) from instructor;
+
+16) 
+ALTER TABLE Employee
+ADD DOB Date;
+
+update Employee
+set DOB = '16-NOV-1996';
+
+select to_char(DOB, 'DD-MON-YYYY') from Employee; 
+select to_char(DOB, 'DD-MON-YY') from Employee;
+select to_char(DOB, 'DD-MM-YY') from Employee;
+
+17)select EmpName,  to_char(DOB, 'YEAR') from Employee; 
+select EmpName,  to_char(DOB, 'Year') from Employee; 
+select EmpName,  to_char(DOB, 'year') from Employee; 
+
+18)select EmpName,  to_char(DOB, 'DAY') from Employee;
+select EmpName,  to_char(DOB, 'Day') from Employee;
+
+19)select EmpName,  to_char(DOB, 'MONTH') from Employee;
+select EmpName,  to_char(DOB, 'Month') from Employee;
+
+20)select EmpName,  last_day(DOB), to_char(last_day(DOB), 'Day') from Employee;
+
+21)SELECT floor(months_between(sysdate, DOB) /12) Age FROM dual, Employee;
+
+22)select next_day((add_months(DOB, 720)), 'saturday') from Employee;
+
+23)select EmpName from Employee WHERE to_char(DOB, 'yyyy') = &x;
+ 
+24)select EmpName from Employee WHERE to_char(DOB, 'yyyy') > &x and to_char(DOB, 'yyyy') < &y;
+
+25)SELECT EmpName, floor(months_between(sysdate, DOB) /12) from Employee, dual where  floor(months_between(sysdate, DOB) /12) >= 65;
+
