@@ -1,0 +1,203 @@
+1)
+create table Areas(
+	radius numeric(4, 2) primary key,
+	area numeric(8, 2)
+);
+
+insert into Areas values (6, 18);
+
+set serveroutput on;
+declare
+	r number;
+	a Areas.area%type;
+	cursor c1 is select area from Areas where radius = r;
+
+begin
+	r := '&r';
+	open c1;
+	fetch c1 into a;
+	if c1%rowcount = 0 then raise no_data_found;
+	end if;
+	dbms_output.put_line('Area : ' || to_char(a));
+	
+	close c1;
+	exception
+		when no_data_found then
+			dbms_output.put_line('No data found!');
+end;
+/
+
+drop table Areas;
+
+2) set serveroutput on;
+
+declare 
+	ins_name instructor.name%type;
+	d varchar(10);
+	cursor c1 is
+		select name from instructor where dept_name = d;
+begin
+	d := '&d';
+	open c1;
+
+	loop
+		fetch c1 into ins_name;
+		if c1%rowcount = 0 then raise no_data_found;
+		end if;
+		exit when c1%notfound;
+		dbms_output.put_line(ins_name);
+	
+	end loop;
+	close c1;
+
+	
+	exception
+		when no_data_found then 
+		dbms_output.put_line('No instructors found in ' || d);
+	end;
+
+3)
+
+create table Salesman_Master(
+	salesman_no number primary key,
+	salesman_name varchar(10),
+	rate_of_commission number,
+	target_sales number, 
+	total_sales number
+);
+
+create table commission_payable(
+	salesman_no number,
+	commission_amount number, 
+	date_of_payment date
+);
+
+insert into salesman_master values(111, 'Logan', 0.03, 1000, 500);
+
+set serveroutput on;
+declare
+	s_no Salesman_Master.salesman_no%type;
+	cursor c1 is select * from salesman_master where salesman_no = s_no;
+	row salesman_master%rowtype;
+	target_not_met exception;
+	comm numeric(5, 2);
+
+begin
+	dbms_output.put_line('Enter salesman number');
+	s_no := &s_no;
+	open c1;
+
+	fetch c1 into row;
+	if c1%rowcount = 0 then raise no_data_found; end if;
+	if not row.total_sales >= row.target_sales then raise target_not_met;
+	end if;
+	comm := row.rate_of_commission * row.total_sales;
+	insert into commission_payable values(s_no, comm, current_date);
+
+	close c1;
+	
+	exception 
+	when target_not_met then dbms_output.put_line('Salesman has not met the target');
+	when no_data_found then 
+		dbms_output.put_line('No Salesman found in');
+
+end;
+/
+
+drop table Salesman_Master;
+
+drop table commission_payable;
+
+4) create table salary_raise(
+	instructor_id number,
+	raise_date date,
+	raise_amount number);
+
+set serveroutput on;
+declare
+	row instructor%rowtype;
+	dept varchar(10);
+	cursor c1 is select * from instructor where dept_name = dept;
+	raise_amount number;
+
+begin
+	dept := '&dept';
+	open c1;
+	loop
+		fetch c1 into row;
+		exit when c1%notfound;
+		raise_amount := 0.05 * row.salary;
+		update instructor set salary = salary + raise_amount
+		where id = row.id;
+		insert into salary_raise values(row.id, current_date, raise_amount);
+	end loop;
+	close c1;
+end;
+/
+
+drop table salary_raise;
+
+5) 
+
+declare
+
+cursor c1 is select * from student order by tot_cred;
+row student%rowtype;
+
+	begin
+
+	open c1;
+
+	loop
+
+		fetch c1 into row;
+		exit when c1%rowcount >= 10;
+		dbms_output.put_line(row.id || ' ' || row.name || ' ' || row.dept_name || ' ' || to_char(row.tot_cred));
+
+	end loop;
+
+	close c1;
+
+end;
+/
+
+6) declare
+	num1 number;
+	num2 number;
+	oper varchar(1);
+	result number;
+	operator_invalid exception;
+	begin
+		num1 := &num1;
+		num2 := &num2;
+		oper := '&oper';
+		
+		
+		 -- if (oper not like '+') or (oper not like '-')  or (oper not like '*') or (oper not like '/')
+		if NOT REGEXP_LIKE(oper, '^+|-|*|/$')
+		 then raise operator_invalid;
+		 end if;
+		
+		if oper = '+' then
+			result := num1 + num2;
+		end if;
+		if oper = '-' then
+			result := num1 - num2;
+		end if;
+		if oper = '*' then
+			result := num1 * num2;
+		end if;
+		if oper = '/' then
+			if num2 = 0 then
+				raise zero_divide;
+			end if;
+			result := num1 / num2;
+		end if;
+
+		dbms_output.put_line('Result : ' || result);
+
+		exception 
+		when operator_invalid then dbms_output.put_line('Operator Invalid!');
+		when zero_divide then dbms_output.put_line('Divide by Zero is not possible!');
+	end;
+/
