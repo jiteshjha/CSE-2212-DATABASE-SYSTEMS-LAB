@@ -1,0 +1,98 @@
+1) create table salary_raise(
+	instructor_id number,
+	raise_date date,
+	raise_amount number
+);
+
+
+set serverout on;
+
+declare
+	dept char(10);
+	amount number;
+	cursor c1 is
+	SELECT * from instructor where dept_name = dept
+	for update;
+	begin
+		dept := '&dept';
+		for item in c1
+		loop
+			amount := item.salary + 0.05 * item.salary;
+			update instructor set salary = amount where current of c1;
+			insert into salary_raise values(item.id, sysdate, amount);
+		end loop;
+	end;
+/
+
+drop table salary_raise;
+
+2)
+
+create table item_master(
+	itemid number,
+	description varchar(10),
+	quantity number
+);
+
+
+create table item_transaction(
+	itemid number,
+	description varchar(10),
+	quantity number
+);
+
+insert into item_master values(1, 'towels', 5);
+insert into item_master values(2, 'soap', 6);
+
+insert into item_transaction values(1, 'towels', 3);
+insert into item_transaction values(3, 'mug', 4);
+
+set serveroutput on;
+
+declare
+	cursor c1 is select * from item_transaction;
+	cursor c2 (numb number) is select * from item_master where itemid = numb for update;
+	row item_transaction%rowtype;
+
+	begin	
+		
+		for i in c1
+		loop
+			open c2(i.itemid);
+			fetch c2 into row;
+			if c2%notfound then insert into item_master values(i.itemid, i.description, i.quantity);
+			else
+				update item_master set quantity = quantity - i.quantity where itemid = i.itemid;
+			end if;
+			close c2;
+		end loop;
+	end;
+/
+
+drop table item_master;
+drop table item_transaction;
+
+3)
+
+set serveroutput on;
+
+declare
+	amount number;
+	
+	begin
+		insert into instructor values(62090,'Jha','Finance',90000);
+		savepoint undo_salary_changes;
+		update instructor set salary = 150000 where name = 'Srinivasan';
+		update instructor set salary = 200000 where name = 'Mozart';
+		select sum(salary) into amount from instructor;
+
+		if amount > 2000000 then
+			rollback to savepoint undo_salary_changes;
+		end if;
+		commit;
+	end;
+/
+		
+		
+
+			
